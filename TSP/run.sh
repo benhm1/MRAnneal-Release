@@ -9,3 +9,7 @@ fi
 
 
 python MRAll.py --conf-path mrjob.conf -r $1 --file a280.json --file parameters.py --file application.py  input.txt 
+
+
+rm -f *.pyc
+

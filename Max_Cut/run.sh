@@ -9,3 +9,4 @@ fi
 
 python MRAll.py --conf-path mrjob.conf -r $1 --file edges.json --file application.py --file maxCut.py --file parameters.py  input.txt 
 
+rm -f *.pyc
