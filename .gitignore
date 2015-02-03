@@ -1,0 +1,17 @@
+CS91-AWS
+mrjob.conf
+*~
+*.pyc
+__pycache__/
+*.ini
+*.log
+*.aux
+*.make
+*.d
+*.pdf
+*.fls
+*.blg
+*.bbl
+*.temp
+.nfs*
+*DS_Store
