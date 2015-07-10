@@ -1,22 +1,20 @@
-"""
-
-
-Copyright [2015] [Benjamin Marks and Riley Collins]
-
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
-
-     http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
-
-
-"""
+#  
+#  
+#  Copyright [2015] [Benjamin Marks and Riley Collins]
+#  
+#     Licensed under the Apache License, Version 2.0 (the "License");
+#     you may not use this file except in compliance with the License.
+#     You may obtain a copy of the License at
+#  
+#       http://www.apache.org/licenses/LICENSE-2.0
+#  
+#     Unless required by applicable law or agreed to in writing, software
+#     distributed under the License is distributed on an "AS IS" BASIS,
+#     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#     See the License for the specific language governing permissions and
+#     limitations under the License.
+#  
+#  
 def initSeed() :
     # Read in the list of edges to compute the vertices
     import json
@@ -24,8 +22,8 @@ def initSeed() :
     with open('edges.json') as edges :
         edgeList = json.load( edges )
         for src, dest, weight in edgeList :
-            allVertices.add( src )
-            allVertices.add( dest )
+            allVertices.add( str(src) )
+            allVertices.add( str(dest) )
     return list(allVertices)
 
 def generateSeed( allVertices ) :
@@ -57,10 +55,6 @@ def initAnneals() :
             args['vertices'].add( str(dest))
             if weight < 0 :
                 args['negSum'] += weight
-
-    import sys
-    sys.stderr.write("Negative Sum Is: " + str(args['negSum']) + '\n')
-
     args['vertices'] = list( args['vertices'] )
     return args
 
@@ -76,7 +70,7 @@ def anneal( args, solution ) :
 
 def score( args, solution ) :
     # Sum up all of the edge weights crossing the cut
-    score = -1.0 * args['negSum']  # Ensure score is always positive
+    score = 1 + -1.0 * args['negSum']  # Ensure score is always positive
     for src in args['edges'] :
         for dest in args['edges'][src] :
             if solution[src] != solution[dest] :
@@ -91,7 +85,10 @@ def undoAnneal( args, solution, switched ) :
     return
 
 def processSolution( solution ) :
-    return solution # ( solution[0] + args['negSum'], solution[1] ) 
+    args = initAnneals()
+    solution[0] += args['negSum'] 
+    solution[0] -= 1
+    return solution 
 
 
 
@@ -99,3 +96,5 @@ def processSolution( solution ) :
 
 
     
+
+

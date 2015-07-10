@@ -1,35 +1,79 @@
+#  
+#  
+#  Copyright [2015] [Benjamin Marks and Riley Collins]
+#  
+#     Licensed under the Apache License, Version 2.0 (the "License");
+#     you may not use this file except in compliance with the License.
+#     You may obtain a copy of the License at
+#  
+#       http://www.apache.org/licenses/LICENSE-2.0
+#  
+#     Unless required by applicable law or agreed to in writing, software
+#     distributed under the License is distributed on an "AS IS" BASIS,
+#     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#     See the License for the specific language governing permissions and
+#     limitations under the License.
+#  
+#  
 from random import shuffle
+import json
 from copy import deepcopy
 from collections import defaultdict
 
-"""
-Copyright [2015] [Benjamin Marks and Riley Collins]
 
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
-
-     http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License."""
 def get_data():
     """
     Read in the appropriate data files store in JSON format.
 
     The return value gets passed to the generate solutions function.
-
-    Due to constraints under the Family Education Rights and Privacy Act (FERPA)
-    it is not possible for us to release our get_Data() code, as it contains
-    contains information unique to Swarthmore College.
-
-    The user should use this function to read in all relevant data for their run
     """
+    from operator import itemgetter
 
     toRet = {}
+
+    with open('classSizes2.json') as thing:
+        classsize=json.load(thing)
+        toRet['classSizes'] = classsize
+
+    with open('idToCRNs2.json') as thing:
+        idtoCRN=json.load(thing)
+        toRet['idToCRNs'] = idtoCRN
+
+    with open('crnToActual.json') as thing:
+        crnmap=json.load(thing)
+        toRet['crns'] = list(set(crnmap.values() ) ) 
+
+    with open('roster.json') as thing:
+        roster=json.load(thing)
+        toRet['roster'] = roster
+
+    with open('roomCapacity.json') as thing:
+        capacity=json.load(thing)
+        sortedRooms = []
+        for room, cap in capacity.items() :
+            sortedRooms.append( [room, cap, 0 ] )
+        sortedRooms.sort( key=itemgetter(1) )
+        toRet['rooms'] = sortedRooms
+
+    with open('conflicts.json') as thing:
+        conflicts = json.load(thing)
+        # JSON cannot encode sets
+        for crn in conflicts :
+            conflicts[crn] = set( conflicts[crn] )
+
+        toRet['conflicts'] = conflicts
+
+    with open('acceptableByCRN.json') as thing:
+        acceptableByCRN = json.load(thing)
+        ddAcceptable = defaultdict( lambda: None )
+        for crn in acceptableByCRN :
+            ddAcceptable[crn] = set( acceptableByCRN[ crn ] )
+        toRet['acceptableByCRN'] = ddAcceptable
+
+        
+    with open('lengthParams.json') as lengths :
+        toRet['lengthParams'] = json.load( lengths )
+
 
     return toRet
 
@@ -194,22 +238,21 @@ def initAnnealer() :
 	Returns an arguments dictionary that is subsequently passed
 	to the scorer.
 
-        The Ommitted  lines of the following function should be implemented by
-        the user
-
     '''
     toRet = {}
 
     # Read in the student enrolled CRNs
-    
+    toRet['IDToCourses'] = json.loads( open('idToCRNs2.json').read() )
 
     # Read in the bad slots
-    
+    fConflicts = json.loads( open('facultyConflicts.json').read() )
     for k in fConflicts :
         fConflicts[k] = set( fConflicts[k] )
     toRet['FacultyConflicts'] = fConflicts
         
-       
+    with open('lengthParams.json') as lengths :
+        toRet['lengthParams'] = json.load( lengths )
+    
 
     return toRet
 
@@ -507,3 +550,5 @@ def CRNToSlot( sched, crn ) :
     slot  = sched['CIDToSlot'  ][clump]
     assert( crn in sched['SlotToCourses'][slot] )
     return slot
+
+

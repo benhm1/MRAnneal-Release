@@ -8,8 +8,16 @@ elif [ $# -gt 1 ]; then
 fi
 
 
-python MRAll.py --conf-path mrjob.conf -r $1 --file a280.json --file parameters.py --file application.py  input.txt 
+python MRAll.py --stage 1 --conf-path mrjob.conf -r $1 --file a280.json --file parameters.py --file application.py  input.txt > intermediateResult
+
+python ParseIntermediateResult.py intermediateResult > cfg
+
+value=`cat cfg`
 
 
-rm -f *.pyc
+python MRAll.py --stage 2 --rounds $value --conf-path mrjob.conf -r $1 --file a280.json --file parameters.py --file application.py intermediateResult
+
+rm cfg
+rm *.pyc
+rm intermediateResult
 
