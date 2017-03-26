@@ -14,7 +14,7 @@ of a deployed MapReduce installation (eg: Hadoop or EC2).
 
   
   
-  Copyright [2015] [Benjamin Marks and Riley Collins]
+     Copyright [2015] [Benjamin Marks and Riley Collins]
   
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
